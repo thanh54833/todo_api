@@ -5,6 +5,17 @@ let config = require('./config.js');
 let middleware = require('./middleware');
 
 
+const StandardJson = require("./StandardJson")
+
+var standardJson = new StandardJson()
+
+standardJson.standardSuccess = true
+
+console.log("data : " + standardJson.getJson)
+
+
+
+
 class HandlerGenerator {
     login(req, res) {
         let username = req.body.username;
@@ -48,6 +59,24 @@ class HandlerGenerator {
     }
 }
 
+
+
+class Todo {
+    getList(req, res) {
+        var data = {
+            thanh: "thanh", khong: "khong"
+        }
+        standardJson.standardSuccess = false
+
+        console.log("data : " + standardJson.getJson);
+
+        res.json(JSON.stringify(standardJson.getJson));
+    }
+}
+
+standardJson.standardSuccess = false
+
+
 // Starting point of the server
 function main() {
     let app = express(); // Export app for other routes to use
@@ -59,7 +88,14 @@ function main() {
     app.use(bodyParser.json());
     // Routes & Handlers
     app.post('/login', handlers.login);
+
+
     app.get('/', middleware.checkToken, handlers.index);
+
+
+    var todo = new Todo();
+
+    app.get('/todos', middleware.checkToken, todo.getList);
 
 
     app.listen(port, () => console.log(`Server is listening on port: ${port}`));
